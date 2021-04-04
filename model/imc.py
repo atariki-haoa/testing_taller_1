@@ -57,7 +57,8 @@ class IMC:
                     print("Fecha: " + row[6])
                     print("Peso: " + str(row[2]))
                     print("Altura: " + str(row[3]))
-                    print( "Estado: " + row[5])         
+                    print( "Estado: " + row[5])   
+                    print("IMC: " + str(row[4]))      
                     print("-------")                    
         except Error:
             print(Error)
