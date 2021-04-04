@@ -2,6 +2,7 @@ import sqlite3
 import datetime
 from sqlite3 import Error
 from config.globals import DBPATH
+import model.usuarios
 
 # En la clase, se guardan en "self" los atributos del usuario, siendo estos:
 # email,
@@ -23,9 +24,9 @@ class Usuario:
         self.nombre = input("Nombre: ")
         self.primer_apellido = input("Primer apellido: ")
         self.segundo_apelido = input("Segundo apellido: ")
-        self.genero = input("Genero (1: Masculino, 2: Femenino")
+        self.genero = input("Genero (1: Masculino, 2: Femenino): ")
 
-        self.fecha_nacimiento = input("Fecha de Nacimiento (dd/mm/yyyy): ")
+        self.fecha_nacimiento = input("Fecha de Nacimiento (yyyy-mm-dd): ")
         self.atleta = True if input("¿Es Atleta? (si/no): ") == "si" else False
            
         con = sqlite3.connect(DBPATH)
@@ -37,7 +38,8 @@ class Usuario:
                         self.primer_apellido, 
                         self.segundo_apelido,
                         self.genero,
-                        self.fecha_nacimiento)
+                        self.fecha_nacimiento,
+                        self.atleta)
             cursorObj.execute("""INSERT INTO usuarios(
                                                 email,
                                                 contraseña,
@@ -45,8 +47,9 @@ class Usuario:
                                                 primer_apellido,
                                                 segundo_apellido,
                                                 genero,
-                                                fecha_nacimiento)
-                                VALUES(?, ?, ?, ?, ?, ?, ?)""", entities)
+                                                fecha_nacimiento,
+                                                atleta)
+                                VALUES(?, ?, ?, ?, ?, ?, ?, ?)""", entities)
             con.commit()
         except Error:
             print(Error)
@@ -57,17 +60,26 @@ class Usuario:
     #de los datos de ingreso
     def login(self, email_ingreso, contraseña):
         con = sqlite3.connect(DBPATH)
-        usuario = {}
+        usuario = model.usuarios.Usuario()
         try:
             cursorObj = con.cursor()
             query_select = """SELECT * FROM usuarios 
                               WHERE email = """ + "'" + email_ingreso + "';"
             cursorObj.execute(query_select)
             rows = cursorObj.fetchall()
-            if (len(rows) > 0):
-                temp_usuario = rows[0]
-                if temp_usuario[1] == contraseña:
-                    usuario = temp_usuario
+            if (len(rows) <= 0):
+                usuario = None
+            else:
+                data = rows[0]
+                if data[2] == contraseña:
+                    usuario.usuario_id = data[0]
+                    usuario.email = data[1]
+                    usuario.nombre = data[3]
+                    usuario.primer_apellido = data[4]
+                    usuario.segundo_apellido = data[5]
+                    usuario.genero = data[6]
+                    usuario.fecha_nacimiento = data[7]
+                    usuario.atleta = data[8]
         except Error:
             print(Error)
         finally:

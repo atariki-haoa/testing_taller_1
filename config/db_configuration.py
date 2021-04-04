@@ -13,13 +13,14 @@ def sql_table():
         print("Procediendo a crear las tablas")
         cursorObj.execute("""CREATE TABLE IF NOT EXISTS usuarios(
                                         usuario_id INTEGER PRIMARY KEY AUTOINCREMENT, 
-                                        email TEXT,
+                                        email TEXT UNIQUE,
                                         contraseña TEXT,
                                         nombre TEXT,
                                         primer_apellido TEXT,
                                         segundo_apellido TEXT,
                                         genero INTEGER,
-                                        fecha_nacimiento TEXT
+                                        fecha_nacimiento TEXT,
+                                        atleta BOOLEAN
                                         ) """)
         con.commit()
         cursorObj.execute("""CREATE TABLE IF NOT EXISTS imc(
