@@ -18,7 +18,7 @@ def menu():
 
     """) 
     if respuesta == "1":
-        usuario.registro()
+        usuario.registrarPersona()
         menu()
     elif respuesta == "2":
         auth(usuario)
@@ -61,10 +61,10 @@ def submenu(usuario):
                         3- Volver
                         """)
     if respuesta == "1":
-        imc.registrar_imc(usuario)
+        imc.calcularIMC(usuario)
         submenu(usuario)
     elif respuesta == "2":
-        imc.lista(usuario)
+        imc.mostrarEstadoNutricional(usuario)
         submenu(usuario)
     elif respuesta == "3":
         menu()

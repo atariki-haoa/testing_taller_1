@@ -6,7 +6,7 @@ from config.globals import DBPATH
 
 class IMC:
 
-    def registrar_imc(self, usuario):
+    def calcularIMC(self, usuario):
         self.usuario_id = usuario.usuario_id
         self.peso = float(input("Ingresar peso: "))
         self.altura = float(input("Ingresar altura: "))
@@ -44,7 +44,7 @@ class IMC:
             con.close()
     
 
-    def lista(self, usuario):
+    def mostrarEstadoNutricional(self, usuario):
         con = sqlite3.connect(DBPATH)
         try:
             cursorObj = con.cursor()

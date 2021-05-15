@@ -1,8 +1,10 @@
 import sqlite3
-import datetime
 from sqlite3 import Error
+from typing_extensions import runtime
 from config.globals import DBPATH
 import model.usuarios
+import re
+from itertools import cycle
 
 # En la clase, se guardan en "self" los atributos del usuario, siendo estos:
 # email,
@@ -15,12 +17,12 @@ import model.usuarios
 
 class Usuario: 
     # funcion de registro, crea y guarda usuario en la base de datos
-    def registro(self):
+    def registrarPersona(self):
         print("Ingrese datos de autentificacion")
         self.email = input("Email: ")
-        self.contraseña = input("Contraseña: ")
         
         print("Ingrese los datos personales:")
+        self.rut = input("Rut:")
         self.nombre = input("Nombre: ")
         self.primer_apellido = input("Primer apellido: ")
         self.segundo_apelido = input("Segundo apellido: ")
@@ -28,7 +30,15 @@ class Usuario:
 
         self.fecha_nacimiento = input("Fecha de Nacimiento (yyyy-mm-dd): ")
         self.atleta = True if input("¿Es Atleta? (si/no): ") == "si" else False
-           
+        
+        self.contraseña = self.calcularContraseña()
+        if(self.validarCorreo() and self.validarRut()):
+            self.saveData()
+        else:
+            print("Correo invalido")
+
+
+    def saveData(self):
         con = sqlite3.connect(DBPATH)
         try:
             cursorObj = con.cursor()
@@ -85,3 +95,34 @@ class Usuario:
         finally:
             con.close()
         return usuario
+    
+    def validarCorreo(self):
+            regex = '^(\w|\.|\_|\-)+[@](\w|\_|\-|\.)+[.]\w{2,3}$'
+            if(re.search(regex, self.email)):
+                return True
+            else:
+                return False
+    
+    def calcularContraseña(self):
+        return self.email.split("@")[0] + self.rut[1:4]
+    
+    def validarRut(self):
+        rut = self.rut
+    	rut = rut.upper();
+        rut = rut.replace("-","")
+        rut = rut.replace(".","")
+        aux = rut[:-1]
+        dv = rut[-1:]
+    
+        revertido = map(int, reversed(str(aux)))
+        factors = cycle(range(2,8))
+        s = sum(d * f for d, f in zip(revertido,factors))
+        res = (-s)%11
+    
+        if str(res) == dv:
+            return True
+        elif dv=="K" and res==10:
+            return True
+        else:
+            return False
+         
