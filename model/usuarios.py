@@ -1,10 +1,10 @@
 import sqlite3
 from sqlite3 import Error
-from typing_extensions import runtime
 from config.globals import DBPATH
 import model.usuarios
 import re
 from itertools import cycle
+import unittest
 
 # En la clase, se guardan en "self" los atributos del usuario, siendo estos:
 # email,
@@ -22,7 +22,7 @@ class Usuario:
         self.email = input("Email: ")
         
         print("Ingrese los datos personales:")
-        self.rut = input("Rut:")
+        self.rut = input("Rut: ")
         self.nombre = input("Nombre: ")
         self.primer_apellido = input("Primer apellido: ")
         self.segundo_apelido = input("Segundo apellido: ")
@@ -35,7 +35,7 @@ class Usuario:
         if(self.validarCorreo() and self.validarRut()):
             self.saveData()
         else:
-            print("Correo invalido")
+            print("Correo o invalido")
 
 
     def saveData(self):
@@ -108,21 +108,20 @@ class Usuario:
     
     def validarRut(self):
         rut = self.rut
-    	rut = rut.upper();
+        rut = rut.upper()
         rut = rut.replace("-","")
         rut = rut.replace(".","")
         aux = rut[:-1]
         dv = rut[-1:]
-    
+
         revertido = map(int, reversed(str(aux)))
         factors = cycle(range(2,8))
         s = sum(d * f for d, f in zip(revertido,factors))
         res = (-s)%11
-    
+
         if str(res) == dv:
             return True
         elif dv=="K" and res==10:
             return True
         else:
             return False
-         
