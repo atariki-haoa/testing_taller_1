@@ -18,7 +18,10 @@ def menu():
 
     """) 
     if respuesta == "1":
-        usuario.registrarPersona()
+        if usuario.ingresarDatos():
+            print("Usuario ingresado correctamente")
+        else:
+            print("Error al ingresar el usuario")
         menu()
     elif respuesta == "2":
         auth(usuario)
@@ -31,7 +34,7 @@ def auth(usuario):
     contraseña = input("Contraseña: ")
     usuario = usuario.login(correo, contraseña)
     if not usuario:
-        print("usuario no encontrado")
+        print("usuario no encontrado o contraseña mal ingresada")
         menu()
     else:
         submenu(usuario)
@@ -61,10 +64,13 @@ def submenu(usuario):
                         3- Volver
                         """)
     if respuesta == "1":
-        imc.calcularIMC(usuario)
+        if (imc.calcularIMC(usuario)):
+            print('IMC calculado correctamente')
+        else:
+            print('Error al calcular IMC')
         submenu(usuario)
     elif respuesta == "2":
-        imc.mostrarEstadoNutricional(usuario)
+        imc.mostrarListadoDeRegistros(usuario)
         submenu(usuario)
     elif respuesta == "3":
         menu()

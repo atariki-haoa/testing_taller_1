@@ -1,5 +1,7 @@
 import sqlite3
 import datetime
+import re
+
 from datetime import datetime
 from sqlite3 import Error
 from config.globals import DBPATH
@@ -7,18 +9,20 @@ from config.globals import DBPATH
 class IMC:
 
     def calcularIMC(self, usuario):
+        regex = '[^0-9]|[-]' 
         self.usuario_id = usuario.usuario_id
-        self.peso = float(input("Ingresar peso: "))
-        self.altura = float(input("Ingresar altura: "))
+        altura = input("Ingresar peso: ")
+        peso = input("Ingresar altura: ")
+        if (re.search(regex, altura) or re.search(regex, peso)):
+            return False
+    
+        self.peso = float(peso)
+        self.altura = float(altura)
         self.imc = self.peso / (self.altura * self.altura)
-        if usuario.genero == 1:
-            self.estado = tabla_masculino(self.imc)
-        elif usuario.genero == 2:
-            self.estado = tabla_femenino(self.imc)
-        else:
-            self.estado = "N/A"
+        self.estado = self.mostrarEstadoNutricional(self, usuario.genero)
         self.fecha =  datetime.today().strftime('%Y-%m-%d')
         con = sqlite3.connect(DBPATH)
+        flag = True
         try:
             cursorObj = con.cursor()
             entities = (self.usuario_id,
@@ -36,15 +40,26 @@ class IMC:
                                                 fecha)
                                 VALUES(?, ?, ?, ?, ?, ?)""", entities)
             con.commit()
-            print("Estado nutricional: " + self.estado)
-            print(" ")
+            
         except Error:
+            flag = False
             print(Error)
         finally:
             con.close()
+            return flag
     
+    def mostrarEstadoNutricional(self, genero):
+        if genero == 1:
+            self.estado = tabla_masculino(self.imc)
+        elif genero == 2:
+            self.estado = tabla_femenino(self.imc)
+        else:
+            self.estado = "N/A"
+        print("Estado nutricional: " + self.estado)
+        print(" ")
+        return self.estado
 
-    def mostrarEstadoNutricional(self, usuario):
+    def mostrarListadoDeRegistros(self, usuario):
         con = sqlite3.connect(DBPATH)
         try:
             cursorObj = con.cursor()

@@ -4,7 +4,6 @@ from config.globals import DBPATH
 import model.usuarios
 import re
 from itertools import cycle
-import unittest
 
 # En la clase, se guardan en "self" los atributos del usuario, siendo estos:
 # email,
@@ -16,29 +15,40 @@ import unittest
 # fecha_nacimiento
 
 class Usuario: 
-    # funcion de registro, crea y guarda usuario en la base de datos
-    def registrarPersona(self):
+
+    def ingresarDatos(self):
+        usuario = model.usuarios.Usuario()
         print("Ingrese datos de autentificacion")
-        self.email = input("Email: ")
+        usuario.email = input("Email: ")
         
         print("Ingrese los datos personales:")
-        self.rut = input("Rut: ")
-        self.nombre = input("Nombre: ")
-        self.primer_apellido = input("Primer apellido: ")
-        self.segundo_apelido = input("Segundo apellido: ")
-        self.genero = input("Genero (1: Masculino, 2: Femenino): ")
+        usuario.rut = input("Rut: ")
+        usuario.nombre = input("Nombre: ")
+        usuario.primer_apellido = input("Primer apellido: ")
+        usuario.segundo_apelido = input("Segundo apellido: ")
+        usuario.genero = input("Genero (1: Masculino, 2: Femenino): ")
 
-        self.fecha_nacimiento = input("Fecha de Nacimiento (yyyy-mm-dd): ")
-        self.atleta = True if input("¿Es Atleta? (si/no): ") == "si" else False
-        
-        self.contraseña = self.calcularContraseña()
-        if(self.validarCorreo() and self.validarRut()):
-            self.saveData()
+        usuario.fecha_nacimiento = input("Fecha de Nacimiento (yyyy-mm-dd): ")
+        usuario.atleta = True if input("¿Es Atleta? (si/no): ") == "si" else False
+        if(usuario.validarCorreo() and usuario.validarRut()):
+            return self.registrarPersona(self, usuario)
         else:
-            print("Correo o invalido")
+            return False
 
+    def registrarPersona(self, usuario):
+        self.email = usuario.email
+        self.rut = usuario.rut
+        self.nombre = usuario.nombre
+        self.primer_apellido = usuario.primer_apellido
+        self.segundo_apellido = usuario.segundo_apellido
+        self.genero = usuario.genero
+        self.fecha_nacimiento = usuario.fecha_nacimiento
+        self.atleta = usuario.atleta
+        self.contraseña = self.calcularContraseña(self)
+        return self.saveData(self)
 
     def saveData(self):
+        flag = True
         con = sqlite3.connect(DBPATH)
         try:
             cursorObj = con.cursor()
@@ -62,9 +72,11 @@ class Usuario:
                                 VALUES(?, ?, ?, ?, ?, ?, ?, ?)""", entities)
             con.commit()
         except Error:
+            flag = False
             print(Error)
         finally:
             con.close()
+            return flag
 
     #funcion de login, verifica autentificacion y crea un objeto usuario a partir
     #de los datos de ingreso
@@ -90,6 +102,8 @@ class Usuario:
                     usuario.genero = data[6]
                     usuario.fecha_nacimiento = data[7]
                     usuario.atleta = data[8]
+                else:
+                    usuario = None
         except Error:
             print(Error)
         finally:
@@ -104,7 +118,7 @@ class Usuario:
                 return False
     
     def calcularContraseña(self):
-        return self.email.split("@")[0] + self.rut[1:4]
+        return self.email.split("@")[0] + self.rut[0:4]
     
     def validarRut(self):
         rut = self.rut
