@@ -25,7 +25,7 @@ class TestValidations(unittest.TestCase):
         self.assertEqual(Usuario.validarCorreo(self), False)
 
     def validarEstadoNutricional(self):
-        imcs = [10, 20, 30, 40]
+        imcs = [10, 20, 25, 30, 40]
         self.assertEqual(hasattr(IMC, 'mostrarEstadoNutricional'), True)
         for imc in imcs:
             self.imc = imc
