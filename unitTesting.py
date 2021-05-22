@@ -21,10 +21,12 @@ class TestValidations(unittest.TestCase):
 
     def validarCorreo(self):
         self.email = 'correosincorrectoformato'
+        self.assertEqual(hasattr(Usuario, 'validarCorreo'), True)
         self.assertEqual(Usuario.validarCorreo(self), False)
 
     def validarEstadoNutricional(self):
         imcs = [10, 20, 30, 40]
+        self.assertEqual(hasattr(IMC, 'mostrarEstadoNutricional'), True)
         for imc in imcs:
             self.imc = imc
             IMC.mostrarEstadoNutricional(self, 1)
@@ -32,17 +34,20 @@ class TestValidations(unittest.TestCase):
     def validarCalcularPassword(self):
         self.email = 'asd@1234.cl'
         self.rut = '1234-1'
+        self.assertEqual(hasattr(Usuario, 'calcularContraseña'), True)
         self.assertEqual(Usuario.calcularContraseña(self), 'asd1234')
      
     @patch('builtins.input', lambda *args: '10')
     def validarImcVerdadero(self):
         usuario = FakeUser.create()
+        self.assertEqual(hasattr(IMC, 'calcularIMC'), True)
         self.mostrarEstadoNutricional = IMC.mostrarEstadoNutricional
         self.assertEqual(IMC.calcularIMC(self, usuario), True)
             
     @patch('builtins.input', lambda *args: '-10')
     def validarImcFalso(self):
         usuario = FakeUser.create()
+        self.assertEqual(hasattr(IMC, 'calcularIMC'), True)
         self.mostrarEstadoNutricional = IMC.mostrarEstadoNutricional
         self.assertEqual(IMC.calcularIMC(self, usuario), False)
 
@@ -50,6 +55,7 @@ class TestValidations(unittest.TestCase):
         usuario = FakeUser.create() 
         self.calcularContraseña = Usuario.calcularContraseña
         self.saveData = Usuario.saveData
+        self.assertEqual(hasattr(Usuario, 'registrarPersona'), True)
         self.assertEqual(Usuario.registrarPersona(self, usuario), True)
     
     def allTest(self):
